@@ -1,0 +1,8 @@
+XOXXOX_CNNMMD_SRVTOP=/opt/common
+XOXXOX_CNNMMD_SRVCNF=/opt/common/cnf
+XOXXOX_CNNMMD_SRVLIB=/opt/common/lib
+XOXXOX_CNNMMD_SRVDYN=/opt/common/dyn
+XOXXOX_CNNMMD_SRVPRC=/opt/common/prc
+XOXXOX_CNNMMD_SRVWEB=/opt/common/web
+
+PYTHONPATH=/opt/common/lib:/opt/common/dyn

@@ -1,0 +1,5 @@
+{
+  "adraco": "*",
+  "pthcrt": "/pub/crt.pem",
+  "pthkey": "/prv/key.pem"
+}
