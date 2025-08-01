@@ -1,0 +1,4 @@
+services:
+  xoxxox_appmid:
+    ports:
+    - 10000:80

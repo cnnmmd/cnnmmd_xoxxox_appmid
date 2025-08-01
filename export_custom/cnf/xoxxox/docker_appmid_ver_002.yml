@@ -1,0 +1,3 @@
+services:
+  xoxxox_appmid:
+    command: bash -c "python /opt/common/bin/xoxxox/srvmid.py --numset 8 --numget 8"
