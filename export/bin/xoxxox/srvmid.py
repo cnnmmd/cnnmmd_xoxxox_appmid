@@ -205,6 +205,8 @@ async def resprc(datreq):
 
   keyprc = dicreq["keyprc"]
   frmtgt = LibMid.dicprc[keyprc]["frm"]
+  argtgt = []
+  cnftgt = []
   try:
     argtgt = LibMid.dicprc[keyprc]["arg"]
   except Exception as e:
@@ -218,14 +220,14 @@ async def resprc(datreq):
       result = invoke(frmtgt, argtgt, cnftgt, dicreq)
       #result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
-      print(f"err[{e}]", flush=True)
+      print(f"err: srvmid: syn: {e}", flush=True)
   else:
     try:
       result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
       #result = await invoke(frmtgt, argtgt, dicreq)
-      result = invoke(frmtgt, argtgt, dicreq)
+      #result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
-      print(f"err[{e}]", flush=True)
+      print(f"err: srvmid: asy: {e}", flush=True)
 
   keydat = str(uuid7())
   values[keydat] = result
