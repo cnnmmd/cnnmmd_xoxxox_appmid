@@ -1,0 +1,5 @@
+services:
+  xoxxox_appmid:
+    tty: true
+    stdin_open: true
+    command: "/bin/bash"
