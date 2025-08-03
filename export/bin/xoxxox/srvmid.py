@@ -23,15 +23,13 @@ for _, p, f in pkgutil.iter_modules([SrvMid.dirdyn]):
 # 評価：拡張／プラグイン
 
 def invoke(frmtgt, argtgt, cnftgt, dicreq):
-#def invoke(frmtgt, argtgt, dicreq):
   p, c, m = frmtgt.split(".")
   module = LibMid.plugin[p]
   clstgt = getattr(module, c)
   method = getattr(clstgt, m)
   lstarg = [values[dicreq[i]] for i in argtgt]
-  lstcnf = [dicreq[i] for i in cnftgt]
-  result = method(*lstarg *lstcnf)
-  #result = method(*lstarg)
+  lstarg.append([dicreq[i] for i in cnftgt])
+  result = method(*lstarg)
   return result
 
 #---------------------------------------------------------------------------
@@ -218,14 +216,11 @@ async def resprc(datreq):
   if LibMid.dicprc[keyprc]["syn"] == True:
     try:
       result = invoke(frmtgt, argtgt, cnftgt, dicreq)
-      #result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
       print(f"err: srvmid: syn: {e}", flush=True)
   else:
     try:
       result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
-      #result = await invoke(frmtgt, argtgt, dicreq)
-      #result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
       print(f"err: srvmid: asy: {e}", flush=True)
 
