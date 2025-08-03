@@ -21,13 +21,16 @@ for _, p, f in pkgutil.iter_modules([SrvMid.dirdyn]):
 
 #---------------------------------------------------------------------------
 # 評価：拡張／プラグイン
+# 処理：メソッドに渡す引数の評価値（次の順番で引き渡し）：
+# argtgt ... "arg": [...] ... LibMid.values[dicreq[X]] # ラベルのデータ
+# cnftgt ... "cnf": [...] ... dicreq[X] # ラベル
 
 def invoke(frmtgt, argtgt, cnftgt, dicreq):
   p, c, m = frmtgt.split(".")
   module = LibMid.plugin[p]
   clstgt = getattr(module, c)
   method = getattr(clstgt, m)
-  lstarg = [values[dicreq[i]] for i in argtgt]
+  lstarg = [LibMid.values[dicreq[i]] for i in argtgt]
   lstarg.extend([dicreq[i] for i in cnftgt])
   result = method(*lstarg)
   return result
@@ -36,7 +39,6 @@ def invoke(frmtgt, argtgt, cnftgt, dicreq):
 # 初期
 
 async def resini(datreq):
-  global values
   global numset
   global numget
   global lstset
@@ -44,7 +46,7 @@ async def resini(datreq):
 
   dicreq = await datreq.json()
 
-  values = {}
+  LibMid.values = {}
   for i in range(numset):
     keyset = f"{i:03}"
     lstset[keyset] = []
@@ -66,10 +68,8 @@ async def resini(datreq):
 # 格納：内容を受信〜内容を格納〜キーを送信
 
 async def resset(datreq):
-  global values
-
   keydat = str(uuid7())
-  values[keydat] = await datreq.read()
+  LibMid.values[keydat] = await datreq.read()
 
   return web.Response(
     text=json.dumps({"status": "0", "keydat": keydat}),
@@ -83,13 +83,11 @@ async def resset(datreq):
 # 取得：キーを受信〜内容を取得〜内容を送信
 
 async def resget(datreq):
-  global values
-
   dicreq = await datreq.json()
   keydat = dicreq["keydat"]
 
   return web.Response(
-    body=values[keydat],
+    body=LibMid.values[keydat],
     headers={
       'Content-Type': 'application/octet-stream',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -100,12 +98,11 @@ async def resget(datreq):
 # 格納：ローデータを受け取り（受信完了を通知）
 
 async def ressps(datreq):
-  global values
   global lstset
   global evtset
 
   keydat = str(uuid7())
-  values[keydat] = await datreq.read()
+  LibMid.values[keydat] = await datreq.read()
 
   pthset = datreq.path
   keyset = pthset[4:]
@@ -125,7 +122,6 @@ async def ressps(datreq):
 # 格納：データＩＤを引き渡し（準備ができたら）
 
 async def resspp(datreq):
-  global values
   global lstset
   global evtset
 
@@ -148,7 +144,6 @@ async def resspp(datreq):
 # 取得：データＩＤを受け取り（受信完了を通知）
 
 async def resgps(datreq):
-  global values
   global lstget
   global evtget
 
@@ -173,7 +168,6 @@ async def resgps(datreq):
 # 取得：ローデータを引き渡し（準備ができたら）
 
 async def resgpp(datreq):
-  global values
   global lstget
   global evtget
 
@@ -185,7 +179,7 @@ async def resgpp(datreq):
   keydat = lstget[keyget].pop()
 
   return web.Response(
-    body=values[keydat],
+    body=LibMid.values[keydat],
     headers={
       'Content-Type': 'application/octet-stream',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -196,9 +190,6 @@ async def resgpp(datreq):
 # 処理
 
 async def resprc(datreq):
-  global values
-  global memory
-
   dicreq = await datreq.json()
 
   keyprc = dicreq["keyprc"]
@@ -223,7 +214,7 @@ async def resprc(datreq):
       print(f"err: srvmid: asy: {e}", flush=True)
 
   keydat = str(uuid7())
-  values[keydat] = result
+  LibMid.values[keydat] = result
 
   return web.Response(
     text=json.dumps({"status": "0", "keydat": keydat}),
@@ -269,8 +260,6 @@ numget = int(objarg.numget)
 #---------------------------------------------------------------------------
 # 変数
 
-values = {} # ディクショナリ：内容の格納（ターンごとに内容を消去する）
-memory = {} # ディクショナリ：内容の格納（ターンごとに内容を消去せず）
 lstset = {} # ディクショナリ：内容を格納するリスト、次で使用：sps/spp
 lstget = {} # ディクショナリ：内容を格納するリスト、次で使用：gps/gpp
 evtset = {} # ディクショナリ：イベント、次で使用：sps/spp
