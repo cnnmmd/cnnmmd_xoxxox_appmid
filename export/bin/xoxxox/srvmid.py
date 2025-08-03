@@ -28,8 +28,7 @@ def invoke(frmtgt, argtgt, cnftgt, dicreq):
   clstgt = getattr(module, c)
   method = getattr(clstgt, m)
   lstarg = [values[dicreq[i]] for i in argtgt]
-  if len(cnftgt) != 0:
-    lstarg.extend([dicreq[i] for i in cnftgt])
+  lstarg.extend([dicreq[i] for i in cnftgt])
   result = method(*lstarg)
   return result
 
@@ -204,15 +203,13 @@ async def resprc(datreq):
 
   keyprc = dicreq["keyprc"]
   frmtgt = LibMid.dicprc[keyprc]["frm"]
-  argtgt = []
-  cnftgt = []
   try:
     argtgt = LibMid.dicprc[keyprc]["arg"]
-  except Exception as e:
+  except Exception:
     argtgt = []
   try:
     cnftgt = LibMid.dicprc[keyprc]["cnf"]
-  except Exception as e:
+  except Exception:
     cnftgt = []
   if LibMid.dicprc[keyprc]["syn"] == True:
     try:
