@@ -22,14 +22,16 @@ for _, p, f in pkgutil.iter_modules([SrvMid.dirdyn]):
 #---------------------------------------------------------------------------
 # 評価：拡張／プラグイン
 
-def invoke(frmtgt, argtgt, cnftgt, dicreq):
+#def invoke(frmtgt, argtgt, cnftgt, dicreq):
+def invoke(frmtgt, argtgt, dicreq):
   p, c, m = frmtgt.split(".")
   module = LibMid.plugin[p]
   clstgt = getattr(module, c)
   method = getattr(clstgt, m)
   lstarg = [values[dicreq[i]] for i in argtgt]
-  lstcnf = [dicreq[i] for i in cnftgt]
-  result = method(*lstarg *lstcnf)
+  #lstcnf = [dicreq[i] for i in cnftgt]
+  #result = method(*lstarg *lstcnf)
+  result = method(*lstarg)
   return result
 
 #---------------------------------------------------------------------------
@@ -204,15 +206,17 @@ async def resprc(datreq):
   keyprc = dicreq["keyprc"]
   frmtgt = LibMid.dicprc[keyprc]["frm"]
   argtgt = LibMid.dicprc[keyprc]["arg"]
-  cnftgt = LibMid.dicprc[keyprc]["cnf"]
+  #cnftgt = LibMid.dicprc[keyprc]["cnf"]
   if LibMid.dicprc[keyprc]["syn"] == True:
     try:
-      result = invoke(frmtgt, argtgt, cnftgt, dicreq)
+      #result = invoke(frmtgt, argtgt, cnftgt, dicreq)
+      result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
       print(f"err[{e}]", flush=True)
   else:
     try:
-      result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
+      #result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
+      result = await invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
       print(f"err[{e}]", flush=True)
 
