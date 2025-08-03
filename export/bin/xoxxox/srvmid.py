@@ -204,14 +204,15 @@ async def resprc(datreq):
   keyprc = dicreq["keyprc"]
   frmtgt = LibMid.dicprc[keyprc]["frm"]
   argtgt = LibMid.dicprc[keyprc]["arg"]
+  cnftgt = LibMid.dicprc[keyprc]["cnf"]
   if LibMid.dicprc[keyprc]["syn"] == True:
     try:
-      result = invoke(frmtgt, argtgt, dicreq)
+      result = invoke(frmtgt, argtgt, cnftgt, dicreq)
     except Exception as e:
       print(f"err[{e}]", flush=True)
   else:
     try:
-      result = await invoke(frmtgt, argtgt, dicreq)
+      result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
     except Exception as e:
       print(f"err[{e}]", flush=True)
 
