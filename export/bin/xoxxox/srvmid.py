@@ -28,7 +28,8 @@ def invoke(frmtgt, argtgt, cnftgt, dicreq):
   clstgt = getattr(module, c)
   method = getattr(clstgt, m)
   lstarg = [values[dicreq[i]] for i in argtgt]
-  lstarg.append([dicreq[i] for i in cnftgt])
+  if len(lstarg) != 0:
+    lstarg.append([dicreq[i] for i in cnftgt])
   result = method(*lstarg)
   return result
 
