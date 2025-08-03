@@ -216,7 +216,8 @@ async def resprc(datreq):
   else:
     try:
       #result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
-      result = await invoke(frmtgt, argtgt, dicreq)
+      #result = await invoke(frmtgt, argtgt, dicreq)
+      result = invoke(frmtgt, argtgt, dicreq)
     except Exception as e:
       print(f"err[{e}]", flush=True)
 
