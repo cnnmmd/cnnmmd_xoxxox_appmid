@@ -15,9 +15,22 @@ from xoxxox.params import SrvMid
 #---------------------------------------------------------------------------
 # 参照：拡張／プラグイン
 
-for _, nampkg, flgpkg in pkgutil.iter_modules([SrvMid.dirdyn]):
-  if flgpkg:
-    LibMid.plugin[nampkg] = importlib.import_module(nampkg)
+for _, p, f in pkgutil.iter_modules([SrvMid.dirdyn]):
+  if f:
+    LibMid.plugin[p] = importlib.import_module(p)
+
+#---------------------------------------------------------------------------
+# 評価：拡張／プラグイン
+
+def invoke(frmtgt, argtgt, cnftgt, dicreq):
+  p, c, m = frmtgt.split(".")
+  module = LibMid.plugin[p]
+  clstgt = getattr(module, c)
+  method = getattr(clstgt, m)
+  lstarg = [values[dicreq[i]] for i in argtgt]
+  lstarg.extend([dicreq[i] for i in cnftgt])
+  result = method(*lstarg)
+  return result
 
 #---------------------------------------------------------------------------
 # 初期
@@ -189,18 +202,25 @@ async def resprc(datreq):
   dicreq = await datreq.json()
 
   keyprc = dicreq["keyprc"]
-
-  if [i["key"] for i in LibMid.dicprc if i["key"] == keyprc][0]:
-    if [i["syn"] for i in LibMid.dicprc if i["key"] == keyprc][0]:
-      try:
-        result = eval([i["frm"] for i in LibMid.dicprc if i["key"] == keyprc][0])
-      except Exception as e:
-        print(f"err[{e}]", flush=True)
-    else:
-      try:
-        result = await eval([i["frm"] for i in LibMid.dicprc if i["key"] == keyprc][0])
-      except Exception as e:
-        print(f"err[{e}]", flush=True)
+  frmtgt = LibMid.dicprc[keyprc]["frm"]
+  try:
+    argtgt = LibMid.dicprc[keyprc]["arg"]
+  except Exception:
+    argtgt = []
+  try:
+    cnftgt = LibMid.dicprc[keyprc]["cnf"]
+  except Exception:
+    cnftgt = []
+  if LibMid.dicprc[keyprc]["syn"] == True:
+    try:
+      result = invoke(frmtgt, argtgt, cnftgt, dicreq)
+    except Exception as e:
+      print(f"err: srvmid: syn: {e}", flush=True)
+  else:
+    try:
+      result = await invoke(frmtgt, argtgt, cnftgt, dicreq)
+    except Exception as e:
+      print(f"err: srvmid: asy: {e}", flush=True)
 
   keydat = str(uuid7())
   values[keydat] = result
