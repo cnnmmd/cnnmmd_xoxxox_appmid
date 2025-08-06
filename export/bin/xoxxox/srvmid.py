@@ -57,7 +57,7 @@ async def resini(datreq):
     evtget[keyset].clear()
 
   return web.Response(
-    text=json.dumps({"status": "0"}),
+    text=json.dumps({keysts: "0"}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -72,7 +72,7 @@ async def resset(datreq):
   LibMid.values[keydat] = await datreq.read()
 
   return web.Response(
-    text=json.dumps({"status": "0", "keydat": keydat}),
+    text=json.dumps({keysts: "0", keydic: keydat}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -84,7 +84,7 @@ async def resset(datreq):
 
 async def resget(datreq):
   dicreq = await datreq.json()
-  keydat = dicreq["keydat"]
+  keydat = dicreq[keydic]
 
   return web.Response(
     body=LibMid.values[keydat],
@@ -111,7 +111,7 @@ async def ressps(datreq):
   evtset[keyset].set() # EVT
 
   return web.Response(
-    text=json.dumps({"status": "0"}),
+    text=json.dumps({keysts: "0"}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -133,7 +133,7 @@ async def resspp(datreq):
   keydat = lstset[keyset].pop()
 
   return web.Response(
-    text=json.dumps({"status": "0", "keydat": keydat}),
+    text=json.dumps({keysts: "0", keydic: keydat}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -148,7 +148,7 @@ async def resgps(datreq):
   global evtget
 
   dicreq = await datreq.json()
-  keydat = dicreq["keydat"]
+  keydat = dicreq[keydic]
 
   pthget = datreq.path
   keyget = pthget[4:]
@@ -157,7 +157,7 @@ async def resgps(datreq):
   evtget[keyget].set() # EVT
 
   return web.Response(
-    text=json.dumps({"status": "0"}),
+    text=json.dumps({keysts: "0"}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -192,6 +192,7 @@ async def resgpp(datreq):
 async def resprc(datreq):
   dicreq = await datreq.json()
 
+  # コードを評価
   keyprc = dicreq["keyprc"]
   frmtgt = LibMid.dicprc[keyprc]["frm"]
   try:
@@ -213,11 +214,24 @@ async def resprc(datreq):
     except Exception as e:
       print(f"err: srvmid: asy: {e}", flush=True)
 
-  keydat = str(uuid7())
-  LibMid.values[keydat] = result
+  # 値を格納（ラベル（タプルである："keyNNN"、タプルでない："keydat"））
+  dicres = {}
+  if isinstance(result, tuple):
+    for i in result:
+      keydat = str(uuid7())
+      LibMid.values[keydat] = i
+      numkey = f"{i:03}"
+      dicres[keytpl + numkey] = keydat
+    dicres[keysts] = str(len(result))
+  else:
+    keydat = str(uuid7())
+    LibMid.values[keydat] = result
+    dicres[keydic] = keydat
+    dicres[keysts] = "0"
 
+  # 値のラベルを返却
   return web.Response(
-    text=json.dumps({"status": "0", "keydat": keydat}),
+    text=json.dumps(dicres),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -265,12 +279,16 @@ lstget = {} # ディクショナリ：内容を格納するリスト、次で使
 evtset = {} # ディクショナリ：イベント、次で使用：sps/spp
 evtget = {} # ディクショナリ：イベント、次で使用：gps/gpp
 
+keydic = "keydat" # データキーの辞書キー（処理の場合：タプルでないとき）
+keytpl = "key"    # データキーの辞書キーの接頭語（処理の場合：タプルであるとき）
+keysts = "status" # ステータスの辞書キー
+
 adrini = "/ini" # ルート：初期
 adrset = "/set" # ルート：格納（内容から、内容キーを返却）
 adrget = "/get" # ルート：取得（内容キーから、内容を返却）
 adrsps = "/sps" # ルート：格納：ローデータを受け取り（受信完了を通知）
-adrspp = "/spp" # ルート：格納：データＩＤを引き渡し（準備ができたら）
-adrgps = "/gps" # ルート：取得：データＩＤを受け取り（受信完了を通知）
+adrspp = "/spp" # ルート：格納：データキーを引き渡し（準備ができたら）
+adrgps = "/gps" # ルート：取得：データキーを受け取り（受信完了を通知）
 adrgpp = "/gpp" # ルート：取得：ローデータを引き渡し（準備ができたら）
 adrprc = "/prc" # ルート：処理
 
