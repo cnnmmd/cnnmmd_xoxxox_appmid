@@ -72,7 +72,7 @@ async def resset(datreq):
   LibMid.values[keydat] = await datreq.read()
 
   return web.Response(
-    text=json.dumps({keysts: "0", keydic: keydat}),
+    text=json.dumps({keysts: "0", keyddt: keydat}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -84,7 +84,7 @@ async def resset(datreq):
 
 async def resget(datreq):
   dicreq = await datreq.json()
-  keydat = dicreq[keydic]
+  keydat = dicreq[keyddt]
 
   return web.Response(
     body=LibMid.values[keydat],
@@ -133,7 +133,7 @@ async def resspp(datreq):
   keydat = lstset[keyset].pop()
 
   return web.Response(
-    text=json.dumps({keysts: "0", keydic: keydat}),
+    text=json.dumps({keysts: "0", keyddt: keydat}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -148,7 +148,7 @@ async def resgps(datreq):
   global evtget
 
   dicreq = await datreq.json()
-  keydat = dicreq[keydic]
+  keydat = dicreq[keyddt]
 
   pthget = datreq.path
   keyget = pthget[4:]
@@ -192,18 +192,18 @@ async def resgpp(datreq):
 async def resprc(datreq):
   dicreq = await datreq.json()
 
-  # コードを評価
-  keyprc = dicreq["keyprc"]
-  frmtgt = LibMid.dicprc[keyprc]["frm"]
+  # コードを評価（動的コード："keyprc"）
+  keyprc = dicreq[keydpr]
+  frmtgt = LibMid.dicprc[keyprc][prcfrm]
   try:
-    argtgt = LibMid.dicprc[keyprc]["arg"]
+    argtgt = LibMid.dicprc[keyprc][prcarg]
   except Exception:
     argtgt = []
   try:
-    cnftgt = LibMid.dicprc[keyprc]["cnf"]
+    cnftgt = LibMid.dicprc[keyprc][prccnf]
   except Exception:
     cnftgt = []
-  if LibMid.dicprc[keyprc]["syn"] == True:
+  if LibMid.dicprc[keyprc][prcsyn] == True:
     try:
       result = invoke(frmtgt, argtgt, cnftgt, dicreq)
     except Exception as e:
@@ -214,19 +214,19 @@ async def resprc(datreq):
     except Exception as e:
       print(f"err: srvmid: asy: {e}", flush=True)
 
-  # 値を格納（ラベル（タプルである："keyNNN"、タプルでない："keydat"））
+  # 値を格納（ラベル（タプルでない："keydat"、タプルである："keyNNN"））
   dicres = {}
   if isinstance(result, tuple):
     for i in result:
       keydat = str(uuid7())
       LibMid.values[keydat] = i
       numkey = f"{i:03}"
-      dicres[keytpl + numkey] = keydat
+      dicres[keydtp + numkey] = keydat
     dicres[keysts] = str(len(result))
   else:
     keydat = str(uuid7())
     LibMid.values[keydat] = result
-    dicres[keydic] = keydat
+    dicres[keyddt] = keydat
     dicres[keysts] = "0"
 
   # 値のラベルを返却
@@ -279,9 +279,15 @@ lstget = {} # ディクショナリ：内容を格納するリスト、次で使
 evtset = {} # ディクショナリ：イベント、次で使用：sps/spp
 evtget = {} # ディクショナリ：イベント、次で使用：gps/gpp
 
-keydic = "keydat" # データキーの辞書キー（処理の場合：タプルでないとき）
-keytpl = "key"    # データキーの辞書キーの接頭語（処理の場合：タプルであるとき）
 keysts = "status" # ステータスの辞書キー
+keydpr = "keyprc" # 動的コードの辞書キー
+keyddt = "keydat" # データキーの辞書キー（処理の場合：タプルでないとき）
+keydtp = "key"    # データキーの辞書キーの接頭語（処理の場合：タプルであるとき）
+
+prcfrm = "frm" # 動的コード：モジュール＋クラス＋メソッド
+prcarg = "arg" # 動的コード：引数群：優先順位（１）：ラベルからデータを取得するもの
+prccnf = "cnf" # 動的コード：引数群：優先順位（２）：ラベルのみ取得するもの
+prcsyn = "syn" # 動的コード：同期／非同期（同期＝True）
 
 adrini = "/ini" # ルート：初期
 adrset = "/set" # ルート：格納（内容から、内容キーを返却）
