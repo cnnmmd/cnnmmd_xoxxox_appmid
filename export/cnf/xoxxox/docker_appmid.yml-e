@@ -4,7 +4,7 @@ networks:
     external: true
 services:
   xoxxox_appmid:
-    image: xoxxox/envmid:001
+    image: xoxxox_envmid:001
     container_name: xoxxox_appmid
     volumes:
     - ../../../export:/opt/common
