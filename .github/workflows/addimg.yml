@@ -6,7 +6,7 @@ permissions:
   packages: write
 jobs:
   call:
-    uses: cnnmmd/manage_docenv/.github/workflows/addimg_001.yml@master
+    uses: cnnmmd/manage_docenv/.github/workflows/addimg_003.yml@master
     with:
       rep: "cnnmmd/cnnmmd_xoxxox_appmid"
       nam: "xoxxox"
