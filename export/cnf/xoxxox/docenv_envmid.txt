@@ -2,12 +2,10 @@ FROM ubuntu:22.04
 
 ENV OPTAPT=""
 #ENV OPTAPT="-o Acquire::AllowInsecureRepositories=true -o Acquire::AllowDowngradeToInsecureRepositories=true"
-RUN apt-get ${OPTAPT} -y update
-RUN apt-get ${OPTAPT} -y upgrade
-RUN apt-get ${OPTAPT} -y install python3
-RUN apt-get ${OPTAPT} -y install pip
-RUN apt-get ${OPTAPT} -y install imagemagick
-RUN apt-get ${OPTAPT} -y install ffmpeg
-RUN ln -s /usr/bin/python3.10 /usr/bin/python
-RUN pip install uuid6
-RUN pip install aiohttp
+RUN \
+  apt-get ${OPTAPT} update && \
+  #apt-get ${OPTAPT} upgrade && \
+  apt-get ${OPTAPT} install -y --no-install-recommends python3 python3-pip python-is-python3 && \
+  apt-get ${OPTAPT} install -y --no-install-recommends imagemagick ffmpeg && \
+  rm -rf /var/lib/apt/lists/*
+RUN pip3 install --no-cache-dir uuid6 aiohttp
