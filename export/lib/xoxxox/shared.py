@@ -40,5 +40,5 @@ class LibLog:
       s = importlib.util.spec_from_file_location("module", f"{Prompt.dirprc}/{strlog}.py")
       module = importlib.util.module_from_spec(s)
       s.loader.exec_module(module)
-      conlog = module.Conlog
+      conlog = module.ConLog
       return conlog
