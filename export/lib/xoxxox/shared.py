@@ -37,8 +37,10 @@ class PrcFlw:
 class LibLog:
 
     def getlog(strlog):
+      print("getlog[bgn]", flush=True) # DBG
       s = importlib.util.spec_from_file_location("module", f"{Prompt.dirprc}/{strlog}.py")
       module = importlib.util.module_from_spec(s)
       s.loader.exec_module(module)
       conlog = module.Conlog()
+      print("getlog[end]", flush=True) # DBG
       return conlog
