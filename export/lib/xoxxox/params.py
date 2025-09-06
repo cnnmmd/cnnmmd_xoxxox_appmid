@@ -18,6 +18,9 @@ class SrvMid:
 class Engine:
   dirprc = os.getenv("XOXXOX_CNNMMD_SRVPRC")
 
+class Prompt:
+  dirprc = os.getenv("XOXXOX_CNNMMD_SRVPRC")
+
 class Medium:
   dirweb = os.getenv("XOXXOX_CNNMMD_SRVWEB")
   ratsmp = 16000

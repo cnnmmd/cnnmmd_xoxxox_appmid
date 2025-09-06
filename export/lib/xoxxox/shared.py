@@ -2,7 +2,8 @@
 
 import glob
 import json
-import argparse
+import importlib.util
+from xoxxox.params import Prompt
 from xoxxox.params import Config
 
 #---------------------------------------------------------------------------
@@ -30,3 +31,14 @@ class PrcFlw:
         if isinstance(d, dict):
           dicsrv.update(d)
     return dicsrv
+
+#---------------------------------------------------------------------------
+
+class LibLog:
+
+    def getlog(strlog):
+      s = importlib.util.spec_from_file_location("module", f"{Prompt.dirprc}/{strlog}.py")
+      module = importlib.util.module_from_spec(s)
+      s.loader.exec_module(module)
+      conlog = module.ConLog
+      return conlog
