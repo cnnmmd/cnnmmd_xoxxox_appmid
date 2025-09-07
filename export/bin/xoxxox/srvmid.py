@@ -217,9 +217,9 @@ async def resprc(datreq):
   # 値を格納（ラベル（タプルでない："keydat"、タプルである："keyNNN"））
   dicres = {}
   if isinstance(result, tuple):
-    for i in result:
+    for i, d in enumerate(result):
       keydat = str(uuid7())
-      LibMid.values[keydat] = i
+      LibMid.values[keydat] = d
       numkey = f"{i:03}"
       dicres[keydtp + numkey] = keydat
     dicres[keysts] = str(len(result))
