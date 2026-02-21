@@ -68,11 +68,11 @@ async def resini(datreq):
 # 格納：内容を受信〜内容を格納〜キーを送信
 
 async def resset(datreq):
-  keydat = str(uuid7())
-  LibMid.values[keydat] = await datreq.read()
+  keymmd = str(uuid7())
+  LibMid.values[keymmd] = await datreq.read()
 
   return web.Response(
-    text=json.dumps({keysts: "0", keyddt: keydat}),
+    text=json.dumps({keysts: "0", keyddt: keymmd}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -84,10 +84,10 @@ async def resset(datreq):
 
 async def resget(datreq):
   dicreq = await datreq.json()
-  keydat = dicreq[keyddt]
+  keymmd = dicreq[keyddt]
 
   return web.Response(
-    body=LibMid.values[keydat],
+    body=LibMid.values[keymmd],
     headers={
       'Content-Type': 'application/octet-stream',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -101,12 +101,12 @@ async def ressps(datreq):
   global lstset
   global evtset
 
-  keydat = str(uuid7())
-  LibMid.values[keydat] = await datreq.read()
+  keymmd = str(uuid7())
+  LibMid.values[keymmd] = await datreq.read()
 
   pthset = datreq.path
   keyset = pthset[4:]
-  lstset[keyset].append(keydat)
+  lstset[keyset].append(keymmd)
 
   evtset[keyset].set() # EVT
 
@@ -130,10 +130,10 @@ async def resspp(datreq):
   await evtset[keyset].wait() # EVT
   evtset[keyset].clear() # EVT
 
-  keydat = lstset[keyset].pop()
+  keymmd = lstset[keyset].pop()
 
   return web.Response(
-    text=json.dumps({keysts: "0", keyddt: keydat}),
+    text=json.dumps({keysts: "0", keyddt: keymmd}),
     headers={
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -148,11 +148,11 @@ async def resgps(datreq):
   global evtget
 
   dicreq = await datreq.json()
-  keydat = dicreq[keyddt]
+  keymmd = dicreq[keyddt]
 
   pthget = datreq.path
   keyget = pthget[4:]
-  lstget[keyget].append(keydat)
+  lstget[keyget].append(keymmd)
 
   evtget[keyget].set() # EVT
 
@@ -176,10 +176,10 @@ async def resgpp(datreq):
   await evtget[keyget].wait() # EVT
   evtget[keyget].clear() # EVT
 
-  keydat = lstget[keyget].pop()
+  keymmd = lstget[keyget].pop()
 
   return web.Response(
-    body=LibMid.values[keydat],
+    body=LibMid.values[keymmd],
     headers={
       'Content-Type': 'application/octet-stream',
       'Access-Control-Allow-Origin': dicnet["adraco"]
@@ -214,19 +214,19 @@ async def resprc(datreq):
     except Exception as e:
       print(f"err: srvmid: asy: {e}", flush=True)
 
-  # 値を格納（ラベル（タプルでない："keydat"、タプルである："keyNNN"））
+  # 値を格納（ラベル（タプルでない："keymmd"、タプルである："keyNNN"））
   dicres = {}
   if isinstance(result, tuple):
     for i, d in enumerate(result):
-      keydat = str(uuid7())
-      LibMid.values[keydat] = d
+      keymmd = str(uuid7())
+      LibMid.values[keymmd] = d
       numkey = f"{i:03}"
-      dicres[keydtp + numkey] = keydat
+      dicres[keydtp + numkey] = keymmd
     dicres[keysts] = str(len(result))
   else:
-    keydat = str(uuid7())
-    LibMid.values[keydat] = result
-    dicres[keyddt] = keydat
+    keymmd = str(uuid7())
+    LibMid.values[keymmd] = result
+    dicres[keyddt] = keymmd
     dicres[keysts] = "0"
 
   # 値のラベルを返却
@@ -281,7 +281,7 @@ evtget = {} # ディクショナリ：イベント、次で使用：gps/gpp
 
 keysts = "status" # ステータスの辞書キー
 keydpr = "keyprc" # 動的コードの辞書キー
-keyddt = "keydat" # データキーの辞書キー（処理の場合：タプルでないとき）
+keyddt = "keymmd" # データキーの辞書キー（処理の場合：タプルでないとき）
 keydtp = "key"    # データキーの辞書キーの接頭語（処理の場合：タプルであるとき）
 
 prcfrm = "frm" # 動的コード：モジュール＋クラス＋メソッド
