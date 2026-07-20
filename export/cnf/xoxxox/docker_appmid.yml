@@ -9,7 +9,7 @@ services:
     volumes:
     - ../../../export:/opt/common
     - ../../../vol000:/opt/vol000
-    - ../../../vol000:/opt/vol001
+    - ../../../vol001:/opt/vol001
     env_file:
     - ./envdir.txt
     ports:
